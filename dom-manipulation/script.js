@@ -210,20 +210,30 @@ function updateLocalStorageWithServerData(serverQuotes) {
     }
   }
   
-
-function notifyUser(message) {
+  function notifyUser(message) {
     const notification = document.createElement("div");
     notification.textContent = message;
     notification.style.position = "fixed";
     notification.style.bottom = "10px";
     notification.style.right = "10px";
-    notification.style.background = "lightblue";
+    notification.style.background = "#4CAF50";  // ✅ Green for success
+    notification.style.color = "white";
     notification.style.padding = "10px";
-    notification.style.border = "1px solid black";
     notification.style.borderRadius = "5px";
     notification.style.zIndex = "1000";
-  
+    notification.style.boxShadow = "0px 0px 10px rgba(0,0,0,0.2)";
+    
     document.body.appendChild(notification);
     setTimeout(() => notification.remove(), 5000);  // ✅ Auto-dismiss after 5 sec
+  }
+  
+  function fetchQuotesFromServer() {
+    fetch("https://jsonplaceholder.typicode.com/posts")  // ✅ Mock API
+      .then(response => response.json())
+      .then(data => {
+        updateLocalStorageWithServerData(data);
+        notifyUser("✅ Quotes synced with server!");  // ✅ Add UI notification
+      })
+      .catch(error => console.error("Error fetching quotes:", error));
   }
   
