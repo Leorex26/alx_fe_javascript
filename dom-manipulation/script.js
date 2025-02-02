@@ -143,32 +143,49 @@ filterQuotes();
 
 const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Replace with real server if available
 
-async function fetchQuotesFromServer() {
-  try {
-    const response = await fetch(SERVER_URL);
-    if (!response.ok) throw new Error("Failed to fetch server data");
-
-    const serverQuotes = await response.json();
-    mergeServerQuotes(serverQuotes);
-  } catch (error) {
-    console.error("Error fetching quotes:", error);
-  }
-}
-
-async function syncQuotes() {
-    await fetchQuotesFromServer();
+async function postQuoteToServer(quote) {
+    try {
+      const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+        method: "POST",  // ✅ Ensure POST method is used
+        headers: {
+          "Content-Type": "application/json",  // ✅ Correct headers
+        },
+        body: JSON.stringify(quote),  // ✅ Convert to JSON format
+      });
   
-    // Periodic Sync every 30 seconds
-    setTimeout(syncQuotes, 30000);
+      if (!response.ok) throw new Error("Failed to post quote");
+  
+      const newQuote = await response.json();
+      console.log("Quote successfully posted to server:", newQuote);
+    } catch (error) {
+      console.error("Error posting quote:", error);
+    }
   }
   
-  // Call sync on page load
+  async function syncQuotes() {
+    console.log("Syncing quotes with the server...");
+    await fetchQuotesFromServer();  // ✅ Fetch quotes from the mock API
+    setTimeout(syncQuotes, 30000);  // ✅ Sync every 30 seconds
+  }
+  
+  // ✅ Start syncing on page load
   document.addEventListener("DOMContentLoaded", syncQuotes);
+  
+  async function fetchQuotesFromServer() {
+    try {
+      const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+      if (!response.ok) throw new Error("Failed to fetch server data");
+  
+      const serverQuotes = await response.json();
+      mergeServerQuotes(serverQuotes);  // ✅ Merge new quotes into local storage
+    } catch (error) {
+      console.error("Error fetching quotes:", error);
+    }
+  }
   
   function mergeServerQuotes(serverQuotes) {
     const localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
   
-    // Find quotes missing in local storage
     const newQuotes = serverQuotes.filter(sq => 
       !localQuotes.some(lq => lq.text === sq.text && lq.category === sq.category)
     );
@@ -177,8 +194,8 @@ async function syncQuotes() {
       localQuotes.push(...newQuotes);
       localStorage.setItem("quotes", JSON.stringify(localQuotes));
       notifyUser(`Added ${newQuotes.length} new quotes from the server.`);
-      populateCategories();
-      filterQuotes();
+      populateCategories();  // ✅ Update category dropdown
+      filterQuotes();  // ✅ Refresh displayed quotes
     }
   }
   
@@ -193,6 +210,6 @@ async function syncQuotes() {
     notification.style.border = "1px solid black";
   
     document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 5000);
+    setTimeout(() => notification.remove(), 5000);  // ✅ Auto-dismiss after 5 sec
   }
   
