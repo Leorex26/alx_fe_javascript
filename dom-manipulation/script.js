@@ -49,7 +49,45 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
     document.body.removeChild(a);
   }
   
-  function importFromJsonFile(event) {
-    const fileReader = new FileReader();
-    fileReader.onload = function (
-  
+function importFromJsonFile(event) {
+const fileReader = new FileReader();
+fileReader.onload = function (
+
+function importFromJsonFile(event) {
+const file = event.target.files[0];
+if (!file) {
+alert("No file selected.");
+return;
+}
+
+const fileReader = new FileReader();
+
+fileReader.onload = function (e) {
+try {
+const importedQuotes = JSON.parse(e.target.result);
+
+if (!Array.isArray(importedQuotes)) {
+throw new Error("Invalid JSON format. Expected an array.");
+}
+
+// Validate each quote object
+const validQuotes = importedQuotes.filter(q => q.text && q.category);
+if (validQuotes.length === 0) {
+throw new Error("No valid quotes found in the file.");
+}
+
+// Merge with existing quotes and update local storage
+quotes.push(...validQuotes);
+saveQuotes();
+
+// Provide feedback and update the UI
+alert(`Successfully imported ${validQuotes.length} quotes!`);
+showRandomQuote();  // Optionally refresh the displayed quote
+} catch (error) {
+alert("Error importing quotes: " + error.message);
+}
+};
+
+fileReader.readAsText(file);
+}
+             
