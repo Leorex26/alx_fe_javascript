@@ -144,54 +144,55 @@ filterQuotes();
 const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Replace with real server if available
 
 async function fetchQuotesFromServer() {
-try {
-const response = await fetch(SERVER_URL);
-if (!response.ok) throw new Error("Failed to fetch server data");
+  try {
+    const response = await fetch(SERVER_URL);
+    if (!response.ok) throw new Error("Failed to fetch server data");
 
-const serverQuotes = await response.json();
-mergeServerQuotes(serverQuotes);
-} catch (error) {
-console.error("Error fetching quotes:", error);
-}
+    const serverQuotes = await response.json();
+    mergeServerQuotes(serverQuotes);
+  } catch (error) {
+    console.error("Error fetching quotes:", error);
+  }
 }
 
 async function syncQuotes() {
-await fetchQuotesFromServer();
-
-// Periodic Sync every 30 seconds
-setTimeout(syncQuotes, 30000);
-}
-
-// Call sync on page load
-document.addEventListener("DOMContentLoaded", syncQuotes);
-
-function mergeServerQuotes(serverQuotes) {
-const localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
-
-// Find quotes missing in local storage
-const newQuotes = serverQuotes.filter(sq => 
-!localQuotes.some(lq => lq.text === sq.text && lq.category === sq.category)
-);
-
-if (newQuotes.length > 0) {
-localQuotes.push(...newQuotes);
-localStorage.setItem("quotes", JSON.stringify(localQuotes));
-notifyUser(`Added ${newQuotes.length} new quotes from the server.`);
-populateCategories();
-filterQuotes();
-}
-}
-
-function notifyUser(message) {
-const notification = document.createElement("div");
-notification.textContent = message;
-notification.style.position = "fixed";
-notification.style.bottom = "10px";
-notification.style.right = "10px";
-notification.style.background = "yellow";
-notification.style.padding = "10px";
-notification.style.border = "1px solid black";
-
-document.body.appendChild(notification);
-setTimeout(() => notification.remove(), 5000);
-}
+    await fetchQuotesFromServer();
+  
+    // Periodic Sync every 30 seconds
+    setTimeout(syncQuotes, 30000);
+  }
+  
+  // Call sync on page load
+  document.addEventListener("DOMContentLoaded", syncQuotes);
+  
+  function mergeServerQuotes(serverQuotes) {
+    const localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+  
+    // Find quotes missing in local storage
+    const newQuotes = serverQuotes.filter(sq => 
+      !localQuotes.some(lq => lq.text === sq.text && lq.category === sq.category)
+    );
+  
+    if (newQuotes.length > 0) {
+      localQuotes.push(...newQuotes);
+      localStorage.setItem("quotes", JSON.stringify(localQuotes));
+      notifyUser(`Added ${newQuotes.length} new quotes from the server.`);
+      populateCategories();
+      filterQuotes();
+    }
+  }
+  
+  function notifyUser(message) {
+    const notification = document.createElement("div");
+    notification.textContent = message;
+    notification.style.position = "fixed";
+    notification.style.bottom = "10px";
+    notification.style.right = "10px";
+    notification.style.background = "yellow";
+    notification.style.padding = "10px";
+    notification.style.border = "1px solid black";
+  
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
+  }
+  
