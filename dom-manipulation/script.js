@@ -24,6 +24,8 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
       saveQuotes();
       document.getElementById("newQuoteText").value = "";
       document.getElementById("newQuoteCategory").value = "";
+      populateCategories(); // Update categories dynamically
+      filterQuotes(); // Reapply filtering
     }
   }
   
@@ -50,8 +52,9 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
   }
   
 function importFromJsonFile(event) {
-const fileReader = new FileReader();
-fileReader.onload = function (
+    const fileReader = new FileReader();
+    fileReader.onload = function (a){}
+}
 
 function importFromJsonFile(event) {
 const file = event.target.files[0];
@@ -90,4 +93,51 @@ alert("Error importing quotes: " + error.message);
 
 fileReader.readAsText(file);
 }
-             
+
+function populateCategories() {
+    const categoryFilter = document.getElementById("categoryFilter");
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+  
+    const categories = [...new Set(quotes.map(q => q.category))]; // Get unique categories
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category;
+      option.textContent = category;
+      categoryFilter.appendChild(option);
+    });
+  
+    // Restore last selected filter
+    const lastSelectedCategory = localStorage.getItem("selectedCategory");
+    if (lastSelectedCategory) {
+      categoryFilter.value = lastSelectedCategory;
+      filterQuotes(); // Apply filter on page load
+    }
+  }
+
+  function filterQuotes() {
+    const selectedCategory = document.getElementById("categoryFilter").value;
+    localStorage.setItem("selectedCategory", selectedCategory); // Save selection
+  
+    const filteredQuotes = selectedCategory === "all" 
+      ? quotes 
+      : quotes.filter(q => q.category === selectedCategory);
+  
+    displayQuotes(filteredQuotes);
+  }
+  
+  function displayQuotes(filteredQuotes) {
+    const quoteDisplay = document.getElementById("quoteDisplay");
+    quoteDisplay.innerHTML = "";
+  
+    filteredQuotes.forEach(q => {
+      const quoteElement = document.createElement("p");
+      quoteElement.textContent = q.text;
+      quoteDisplay.appendChild(quoteElement);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    populateCategories();
+    filterQuotes();
+});
+    
