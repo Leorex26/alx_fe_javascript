@@ -8,6 +8,8 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
   }
   
   function showRandomQuote() {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    const quote = quotes[randomIndex];
     const quoteDisplay = document.getElementById("quoteDisplay");
     if (quotes.length > 0) {
       const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -15,6 +17,31 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
       sessionStorage.setItem("lastViewedQuote", quotes[randomIndex].text);
     }
   }
+  
+  function createAddQuoteForm() {
+    const formContainer = document.createElement("div");
+  
+    const quoteInput = document.createElement("input");
+    quoteInput.id = "newQuoteText";
+    quoteInput.type = "text";
+    quoteInput.placeholder = "Enter a new quote";
+  
+    const categoryInput = document.createElement("input");
+    categoryInput.id = "newQuoteCategory";
+    categoryInput.type = "text";
+    categoryInput.placeholder = "Enter quote category";
+  
+    const addButton = document.createElement("button");
+    addButton.textContent = "Add Quote";
+    addButton.onclick = addQuote;
+  
+    formContainer.appendChild(quoteInput);
+    formContainer.appendChild(categoryInput);
+    formContainer.appendChild(addButton);
+  
+    document.body.appendChild(formContainer);
+  }
+
   
   function addQuote() {
     const text = document.getElementById("newQuoteText").value;
